@@ -1,12 +1,155 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teste</title>
+    <title>Gerenciamento de Times</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Teste</h1>
-    <p>Olá Mundo!</p>
+    <header>
+      <div class="logo">Team Manager</div>
+      <div class="auth-section">
+        <div id="authButtons">
+          <button
+            class="btn btn-login"
+            onclick="window.location.href = 'login.html'"
+          >
+            Login
+          </button>
+          <button
+            class="btn btn-signup"
+            onclick="window.location.href = 'signup.html'"
+          >
+            Cadastro
+          </button>
+        </div>
+        <div id="userSection" class="user-section" style="display: none">
+          <span class="user-name" id="userName"></span>
+          <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="homeSection" class="home-section">
+      <div class="home-content">
+        <h1 class="home-title">Bem-vindo!</h1>
+        <p class="home-description">Sistema de Gerenciamento de Times</p>
+        <button
+          class="btn btn-start"
+          onclick="window.location.href = 'login.html'"
+        >
+          Comece Agora
+        </button>
+      </div>
+    </div>
+
+    <div id="teamSection" class="team-container" style="display: none">
+      <div class="container">
+        <h1 class="home-title">Meus Times</h1>
+        <div
+          id="teamList"
+          class="team-list"
+          style="margin-bottom: 1.5rem"
+        ></div>
+
+        <div class="form-group">
+          <label for="teamName">Nome do time</label>
+          <input
+            id="teamName"
+            placeholder="Digite o nome do time"
+            onkeypress="if (event.key === 'Enter') handleAddTeam();"
+          />
+        </div>
+        <button class="form-btn" onclick="handleAddTeam()">
+          Adicionar time
+        </button>
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+      function showHomeSection() {
+        document.getElementById("homeSection").style.display = "block";
+        document.getElementById("teamSection").style.display = "none";
+      }
+
+      function showTeamSection() {
+        document.getElementById("homeSection").style.display = "none";
+        document.getElementById("teamSection").style.display = "block";
+        renderTeamList();
+      }
+
+      function renderTeamList() {
+        const teams = getTeams();
+        const list = document.getElementById("teamList");
+        list.innerHTML = "";
+
+        if (!teams.length) {
+          list.innerHTML =
+            "<p>Nenhum time cadastrado. Adicione um time abaixo.</p>";
+          return;
+        }
+
+        const ul = document.createElement("ul");
+        ul.style.listStyle = "none";
+        ul.style.padding = "0";
+
+        teams.forEach((team) => {
+          const li = document.createElement("li");
+          li.style.display = "flex";
+          li.style.justifyContent = "space-between";
+          li.style.alignItems = "center";
+          li.style.padding = "0.75rem 0";
+          li.style.borderBottom = "1px solid #eee";
+
+          const name = document.createElement("span");
+          name.textContent = team.name;
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn btn-logout";
+          deleteBtn.style.padding = "0.4rem 0.8rem";
+          deleteBtn.style.fontSize = "0.9rem";
+          deleteBtn.textContent = "Excluir";
+          deleteBtn.onclick = () => {
+            removeTeam(team.id);
+            renderTeamList();
+          };
+
+          li.appendChild(name);
+          li.appendChild(deleteBtn);
+          ul.appendChild(li);
+        });
+
+        list.appendChild(ul);
+      }
+
+      function handleAddTeam() {
+        const input = document.getElementById("teamName");
+        const name = input.value.trim();
+        if (!name) {
+          alert("Por favor, digite um nome para o time");
+          return;
+        }
+
+        addTeam(name);
+        input.value = "";
+        renderTeamList();
+      }
+
+      function updateViewOnAuthChange() {
+        const loggedUser = getLoggedUser();
+        if (loggedUser) {
+          showTeamSection();
+        } else {
+          showHomeSection();
+        }
+      }
+
+      window.addEventListener("load", () => {
+        updateAuthSection();
+        updateViewOnAuthChange();
+      });
+    </script>
   </body>
 </html>

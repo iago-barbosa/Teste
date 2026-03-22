@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro - Gerenciamento de Times</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Team Manager</div>
+      <div class="auth-section">
+        <div id="authButtons">
+          <button
+            class="btn btn-login"
+            onclick="window.location.href = 'login.html'"
+          >
+            Login
+          </button>
+          <button
+            class="btn btn-signup"
+            onclick="window.location.href = 'signup.html'"
+          >
+            Cadastro
+          </button>
+        </div>
+        <div id="userSection" class="user-section" style="display: none">
+          <span class="user-name" id="userName"></span>
+          <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <h2 class="form-title">Cadastro</h2>
+      <div id="signupError" class="error"></div>
+      <div class="form-group">
+        <label for="signupName">Nome Completo:</label>
+        <input
+          type="text"
+          id="signupName"
+          placeholder="Seu nome"
+          onkeypress="if (event.key === 'Enter') handleSignup();"
+        />
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email:</label>
+        <input
+          type="email"
+          id="signupEmail"
+          placeholder="seu@email.com"
+          onkeypress="if (event.key === 'Enter') handleSignup();"
+        />
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Senha:</label>
+        <input
+          type="password"
+          id="signupPassword"
+          placeholder="Digite sua senha"
+          onkeypress="if (event.key === 'Enter') handleSignup();"
+        />
+      </div>
+      <div class="form-group">
+        <label for="signupPasswordConfirm">Confirmar Senha:</label>
+        <input
+          type="password"
+          id="signupPasswordConfirm"
+          placeholder="Confirme sua senha"
+          onkeypress="if (event.key === 'Enter') handleSignup();"
+        />
+      </div>
+      <button class="form-btn" onclick="handleSignup()">Cadastrar</button>
+      <div class="toggle-form">
+        Já tem conta?
+        <a onclick="window.location.href = 'login.html'">Faça login</a>
+      </div>
+      <div class="toggle-form" style="margin-top: 0.5rem">
+        <a onclick="window.location.href = 'index.html'"
+          >Voltar para a página inicial</a
+        >
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+      function handleSignup() {
+        const name = document.getElementById("signupName").value;
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+        const passwordConfirm = document.getElementById(
+          "signupPasswordConfirm",
+        ).value;
+        const errorDiv = document.getElementById("signupError");
+
+        errorDiv.classList.remove("show");
+
+        if (!name || !email || !password || !passwordConfirm) {
+          showError(errorDiv, "Todos os campos são obrigatórios");
+          return;
+        }
+
+        if (password !== passwordConfirm) {
+          showError(errorDiv, "As senhas não coincidem");
+          return;
+        }
+
+        if (password.length < 6) {
+          showError(errorDiv, "A senha deve ter pelo menos 6 caracteres");
+          return;
+        }
+
+        const users = getUsers();
+
+        if (users.some((u) => u.email === email)) {
+          showError(errorDiv, "Este email já está registrado");
+          return;
+        }
+
+        users.push({ name, email, password });
+        setUsers(users);
+
+        setLoggedUser({ name, email });
+        updateAuthSection();
+        window.location.href = "index.html";
+      }
+
+      window.addEventListener("load", () => {
+        updateAuthSection();
+        const logged = getLoggedUser();
+        if (logged) {
+          window.location.href = "index.html";
+        }
+      });
+    </script>
+  </body>
+</html>

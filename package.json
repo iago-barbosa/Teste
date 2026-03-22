@@ -1,0 +1,14 @@
+{
+  "name": "team-manager",
+  "version": "1.0.0",
+  "description": "Sistema de Gerenciamento de Times",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.3.0"
+  }
+}

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Gerenciamento de Times</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Team Manager</div>
+      <div class="auth-section">
+        <div id="authButtons">
+          <button
+            class="btn btn-login"
+            onclick="window.location.href = 'login.html'"
+          >
+            Login
+          </button>
+          <button
+            class="btn btn-signup"
+            onclick="window.location.href = 'signup.html'"
+          >
+            Cadastro
+          </button>
+        </div>
+        <div id="userSection" class="user-section" style="display: none">
+          <span class="user-name" id="userName"></span>
+          <button class="btn btn-logout" onclick="logout()">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <h2 class="form-title">Login</h2>
+      <div id="loginError" class="error"></div>
+      <div class="form-group">
+        <label for="loginEmail">Email:</label>
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="seu@email.com"
+          onkeypress="if (event.key === 'Enter') handleLogin();"
+        />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Senha:</label>
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Digite sua senha"
+          onkeypress="if (event.key === 'Enter') handleLogin();"
+        />
+      </div>
+      <button class="form-btn" onclick="handleLogin()">Entrar</button>
+      <div class="toggle-form">
+        Não tem conta?
+        <a onclick="window.location.href = 'signup.html'">Cadastre-se</a>
+      </div>
+      <div class="toggle-form" style="margin-top: 0.5rem">
+        <a onclick="window.location.href = 'index.html'"
+          >Voltar para a página inicial</a
+        >
+      </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function handleLogin() {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const errorDiv = document.getElementById("loginError");
+
+        errorDiv.classList.remove("show");
+
+        if (!email || !password) {
+          showError(errorDiv, "Email e senha são obrigatórios");
+          return;
+        }
+
+        if (!isValidEmail(email)) {
+          showError(errorDiv, "Formato de email inválido");
+          return;
+        }
+
+        const users = getUsers();
+        const user = users.find(
+          (u) => u.email === email && u.password === password,
+        );
+
+        if (!user) {
+          showError(errorDiv, "Email ou senha inválidos");
+          return;
+        }
+
+        setLoggedUser({ name: user.name, email: user.email });
+        updateAuthSection();
+        window.location.href = "index.html";
+      }
+
+      window.addEventListener("load", () => {
+        updateAuthSection();
+        const logged = getLoggedUser();
+        if (logged) {
+          window.location.href = "index.html";
+        }
+      });
+    </script>
+  </body>
+</html>
